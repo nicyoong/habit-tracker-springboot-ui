@@ -9,6 +9,10 @@ export default function Login({ onAuthed, onGoRegister, onFlash }) {
 
   async function submit(e) {
     e.preventDefault();
+    if (!username.trim() || !password.trim()) {
+      onFlash("Username and password are required");
+      return;
+    }
     setBusy(true);
     try {
       const res = await api.login(username, password);

@@ -6,32 +6,39 @@ import { api } from "../api";
 export default function Dashboard({ onFlash }) {
   const [tasks, setTasks] = useState([]);
   const [habits, setHabits] = useState([]);
-  const [busy, setBusy] = useState(true);
+  const [loading, setLoading] = useState(true);
 
-  async function refresh() {
-    setBusy(true);
-    try {
-      const [t, h] = await Promise.all([api.listTasks(), api.listHabits()]);
-      setTasks(t);
-      setHabits(h);
-    } catch (err) {
-      onFlash(err.message);
-    } finally {
-      setBusy(false);
-    }
-  }
-
-  useEffect(() => { refresh(); }, []);
+  useEffect(() => {
+    Promise.all([api.listTasks(), api.listHabits()])
+      .then(([t, h]) => { setTasks(t); setHabits(h); })
+      .catch(err => onFlash(err.message))
+      .finally(() => setLoading(false));
+  }, []);
 
   return (
-    <div style={{ display: "grid", gap: 16 }}>
-      <div style={{ color: "#6b7280", fontSize: 13 }}>
-        {busy ? "Loading..." : "Ready"}
+    <div>
+      <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 24, alignItems: "center" }}>
+        <h2 style={{ margin: 0 }}>Your Overview</h2>
+        <div style={{ fontSize: 13, color: "var(--text-muted)", background: "#e2e8f0", padding: "4px 12px", borderRadius: 20 }}>
+          {loading ? "Syncing..." : "Updated Just Now"}
+        </div>
       </div>
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+      
+      <div className="dashboard-grid">
         <TaskPanel tasks={tasks} setTasks={setTasks} onFlash={onFlash} />
         <HabitPanel habits={habits} setHabits={setHabits} onFlash={onFlash} />
       </div>
+
+      <style>{`
+        .dashboard-grid {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 24px;
+        }
+        @media (max-width: 768px) {
+          .dashboard-grid { grid-template-columns: 1fr; }
+        }
+      `}</style>
     </div>
   );
 }

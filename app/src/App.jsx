@@ -1,8 +1,9 @@
 import React, { useMemo, useState } from "react";
-import { isAuthed, clearToken } from "./auth";
+import { isAuthed, clearToken } from "./auth.js";
 import Login from "./pages/Login.jsx";
 import Register from "./pages/Register.jsx";
 import Dashboard from "./pages/Dashboard.jsx";
+import "./App.css";
 
 export default function App() {
   const [route, setRoute] = useState(isAuthed() ? "dashboard" : "login");
@@ -10,62 +11,32 @@ export default function App() {
 
   const nav = useMemo(() => ({
     go: (r) => { setFlash(""); setRoute(r); },
-    logout: () => { clearToken(); setFlash("Logged out."); setRoute("login"); }
+    logout: () => { clearToken(); setFlash("Successfully logged out."); setRoute("login"); }
   }), []);
 
-  const shellStyle = {
-    fontFamily: "system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif",
-    maxWidth: 980,
-    margin: "40px auto",
-    padding: "0 16px"
-  };
-
-  const cardStyle = {
-    border: "1px solid #e5e7eb",
-    borderRadius: 12,
-    padding: 16,
-    background: "white"
-  };
-
-  const topBarStyle = {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "space-between",
-    marginBottom: 16
-  };
-
   return (
-    <div style={shellStyle}>
-      <div style={topBarStyle}>
+    <div style={{ maxWidth: 1100, margin: "0 auto", padding: "40px 20px" }}>
+      <header style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 40 }}>
         <div>
-          <div style={{ fontSize: 20, fontWeight: 700 }}>Habit / Task Tracker</div>
-          <div style={{ color: "#6b7280", fontSize: 13 }}>Spring Boot + React demo</div>
+          <h1 style={{ fontSize: 24, margin: 0, color: "var(--primary)" }}>FocusFlow</h1>
+          <p style={{ margin: 0, color: "var(--text-muted)", fontSize: 14 }}>Spring Boot + React Productivity</p>
         </div>
-        {isAuthed() ? (
-          <button onClick={nav.logout} style={{ padding: "8px 12px", borderRadius: 10, border: "1px solid #e5e7eb", background: "white", cursor: "pointer" }}>
-            Logout
-          </button>
-        ) : (
-          <div style={{ display: "flex", gap: 8 }}>
-            <button onClick={() => nav.go("login")} style={{ padding: "8px 12px", borderRadius: 10, border: "1px solid #e5e7eb", background: "white", cursor: "pointer" }}>
-              Login
-            </button>
-            <button onClick={() => nav.go("register")} style={{ padding: "8px 12px", borderRadius: 10, border: "1px solid #e5e7eb", background: "white", cursor: "pointer" }}>
-              Register
-            </button>
-          </div>
+        {isAuthed() && (
+          <button className="btn btn-ghost" onClick={nav.logout}>Logout</button>
         )}
-      </div>
+      </header>
 
-      {flash ? (
-        <div style={{ ...cardStyle, marginBottom: 16, background: "#f9fafb" }}>{flash}</div>
-      ) : null}
+      {flash && (
+        <div style={{ background: "#eff6ff", color: "#1e40af", padding: "12px 20px", borderRadius: 8, marginBottom: 24, border: "1px solid #bfdbfe", fontSize: 14 }}>
+          {flash}
+        </div>
+      )}
 
-      <div style={cardStyle}>
+      <main>
         {route === "login" && <Login onAuthed={() => nav.go("dashboard")} onGoRegister={() => nav.go("register")} onFlash={setFlash} />}
         {route === "register" && <Register onAuthed={() => nav.go("dashboard")} onGoLogin={() => nav.go("login")} onFlash={setFlash} />}
         {route === "dashboard" && <Dashboard onFlash={setFlash} />}
-      </div>
+      </main>
     </div>
   );
 }

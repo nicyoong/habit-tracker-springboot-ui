@@ -3,6 +3,7 @@ import { isAuthed, clearToken } from "./auth.js";
 import Login from "./pages/Login.jsx";
 import Register from "./pages/Register.jsx";
 import Dashboard from "./pages/Dashboard.jsx";
+import { Layout, LogOut } from "lucide-react";
 import "./App.css";
 
 export default function App() {
@@ -17,12 +18,19 @@ export default function App() {
   return (
     <div style={{ maxWidth: 1100, margin: "0 auto", padding: "40px 20px" }}>
       <header style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 40 }}>
-        <div>
-          <h1 style={{ fontSize: 24, margin: 0, color: "var(--primary)" }}>FocusFlow</h1>
-          <p style={{ margin: 0, color: "var(--text-muted)", fontSize: 14 }}>Spring Boot + React Productivity</p>
+        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+          <div style={{ background: "var(--primary)", color: "white", padding: 8, borderRadius: 10 }}>
+            <Layout size={24} />
+          </div>
+          <div>
+            <h1 style={{ fontSize: 20, margin: 0, fontWeight: 800 }}>FocusFlow</h1>
+            <p style={{ margin: 0, color: "var(--text-muted)", fontSize: 12 }}>Personal Productivity</p>
+          </div>
         </div>
         {isAuthed() && (
-          <button className="btn btn-ghost" onClick={nav.logout}>Logout</button>
+          <button className="btn btn-ghost" onClick={nav.logout} style={{ gap: 8 }}>
+            <LogOut size={16} /> Logout
+          </button>
         )}
       </header>
 
